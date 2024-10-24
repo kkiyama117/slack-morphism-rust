@@ -134,7 +134,7 @@ impl From<SlackRichTextQuoteElement> for SlackRichTextBlockElement {
 /// https://api.slack.com/reference/block-kit/blocks#rich_text_preformatted
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
-pub enum SlackRichTextElementType{
+pub enum SlackRichTextElementType {
     #[serde(rename = "broadcast")]
     SlackRichTextElementBroadcast(serde_json::Value),
     #[serde(rename = "color")]
