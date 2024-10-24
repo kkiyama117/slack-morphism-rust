@@ -89,6 +89,7 @@ pub struct SlackRichTextListElement {
 }
 
 // TODO: Is this correct? Please check it and delete this comment.
+#[skip_serializing_none]
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum SlackRichTextListStyle {
     #[serde(rename = "bullet")]
@@ -153,6 +154,44 @@ pub enum SlackRichTextElementType {
     SlackRichTextElementUser(serde_json::Value),
     #[serde(rename = "usergroup")]
     SlackRichTextElementUserGroup(serde_json::Value),
+}
+
+#[skip_serializing_none]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize, Builder)]
+pub struct SlackRichTextElementText {
+    pub text: String,
+    pub style: Option<SlackRichTextElementTextStyle>,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+pub enum SlackRichTextElementTextStyle {
+    #[serde(rename = "bold")]
+    Bold,
+    #[serde(rename = "italic")]
+    Italic,
+    #[serde(rename = "strike")]
+    Strike,
+    #[serde(rename = "code")]
+    Code,
+}
+
+impl From<String> for SlackRichTextElementText {
+    fn from(value: String) -> Self {
+        SlackRichTextElementText {
+            text: value.into(),
+            style: None,
+        }
+    }
+}
+
+impl From<&str> for SlackRichTextElementText {
+    fn from(value: &str) -> Self {
+        SlackRichTextElementText {
+            text: value.into(),
+            style: None,
+        }
+    }
 }
 
 #[skip_serializing_none]
