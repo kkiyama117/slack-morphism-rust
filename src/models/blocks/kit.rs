@@ -43,11 +43,6 @@ pub struct SlackRichTextBlock {
     pub block_id: Option<SlackBlockId>,
     pub elements: Vec<SlackRichTextBlockElement>,
 }
-impl From<SlackRichTextBlock> for SlackBlock {
-    fn from(block: SlackRichTextBlock) -> Self {
-        SlackBlock::RichText(block)
-    }
-}
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
@@ -62,47 +57,102 @@ pub enum SlackRichTextBlockElement {
     RichTextQuote(SlackRichTextQuoteElement),
 }
 
-// TODO: Implement each elements
-/// https://api.slack.com/reference/block-kit/blocks#element-types
-/// https://api.slack.com/reference/block-kit/blocks#rich_text_preformatted
-pub type SlackRichTextElementTypes = serde_json::Value;
+impl From<SlackRichTextBlockElement> for SlackRichTextBlock {
+    fn from(element: SlackRichTextBlockElement) -> Self {
+        SlackRichTextBlock {
+            block_id: None,
+            elements: vec![element],
+        }
+    }
+}
 
 #[skip_serializing_none]
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize, Builder)]
 pub struct SlackRichTextSectionElement {
-    pub elements: Vec<SlackRichTextElementTypes>,
+    pub elements: Vec<SlackRichTextElementType>,
+}
+
+impl From<SlackRichTextSectionElement> for SlackRichTextBlockElement {
+    fn from(element: SlackRichTextSectionElement) -> Self {
+        SlackRichTextBlockElement::RichTextSection(element)
+    }
 }
 
 #[skip_serializing_none]
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize, Builder)]
 pub struct SlackRichTextListElement {
     pub style: SlackRichTextListStyle,
-    pub elements: Vec<SlackRichTextBlockElement>,
+    pub elements: Vec<SlackRichTextSectionElement>,
     pub indent: Option<u32>,
     pub offset: Option<u32>,
     pub border: Option<u32>,
 }
 
+// TODO: Is this correct? Please check it and delete this comment.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum SlackRichTextListStyle {
-    // #[serde(rename = "bullet")]
+    #[serde(rename = "bullet")]
     Bullet,
-    // #[serde(rename = "ordered")]
+    #[serde(rename = "ordered")]
     Ordered,
+}
+
+impl From<SlackRichTextListElement> for SlackRichTextBlockElement {
+    fn from(element: SlackRichTextListElement) -> Self {
+        SlackRichTextBlockElement::RichTextList(element)
+    }
 }
 
 #[skip_serializing_none]
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize, Builder)]
 pub struct SlackRichTextPreformattedElement {
-    pub elements: Vec<SlackRichTextElementTypes>,
+    pub elements: Vec<SlackRichTextElementType>,
     pub border: Option<u32>,
+}
+
+impl From<SlackRichTextPreformattedElement> for SlackRichTextBlockElement {
+    fn from(element: SlackRichTextPreformattedElement) -> Self {
+        SlackRichTextBlockElement::RichTextPreformatted(element)
+    }
 }
 
 #[skip_serializing_none]
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize, Builder)]
 pub struct SlackRichTextQuoteElement {
-    pub elements: Vec<SlackRichTextElementTypes>,
+    pub elements: Vec<SlackRichTextElementType>,
     pub border: Option<u32>,
+}
+
+impl From<SlackRichTextQuoteElement> for SlackRichTextBlockElement {
+    fn from(element: SlackRichTextQuoteElement) -> Self {
+        SlackRichTextBlockElement::RichTextQuote(element)
+    }
+}
+
+// TODO: Implement each elements
+/// https://api.slack.com/reference/block-kit/blocks#element-types
+/// https://api.slack.com/reference/block-kit/blocks#rich_text_preformatted
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum SlackRichTextElementType{
+    #[serde(rename = "broadcast")]
+    SlackRichTextElementBroadcast(serde_json::Value),
+    #[serde(rename = "color")]
+    SlackRichTextElementColor(serde_json::Value),
+    #[serde(rename = "channel")]
+    SlackRichTextElementChannel(serde_json::Value),
+    #[serde(rename = "date")]
+    SlackRichTextElementDate(serde_json::Value),
+    #[serde(rename = "emoji")]
+    SlackRichTextElementEmoji(serde_json::Value),
+    #[serde(rename = "link")]
+    SlackRichTextElementLink(serde_json::Value),
+    #[serde(rename = "text")]
+    SlackRichTextElementText(serde_json::Value),
+    #[serde(rename = "user")]
+    SlackRichTextElementUser(serde_json::Value),
+    #[serde(rename = "usergroup")]
+    SlackRichTextElementUserGroup(serde_json::Value),
 }
 
 #[skip_serializing_none]
@@ -217,6 +267,14 @@ pub struct SlackFileBlock {
 impl From<SlackFileBlock> for SlackBlock {
     fn from(block: SlackFileBlock) -> Self {
         SlackBlock::File(block)
+    }
+}
+
+// TODO: Move RT here
+
+impl From<SlackRichTextBlock> for SlackBlock {
+    fn from(block: SlackRichTextBlock) -> Self {
+        SlackBlock::RichText(block)
     }
 }
 
