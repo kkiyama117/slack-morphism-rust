@@ -69,7 +69,7 @@ impl From<SlackRichTextBlockElement> for SlackRichTextBlock {
 #[skip_serializing_none]
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize, Builder)]
 pub struct SlackRichTextSectionElement {
-    pub elements: Vec<SlackRichTextElementType>,
+    pub elements: Vec<SlackRichTextBlockElementType>,
 }
 
 impl From<SlackRichTextSectionElement> for SlackRichTextBlockElement {
@@ -107,7 +107,7 @@ impl From<SlackRichTextListElement> for SlackRichTextBlockElement {
 #[skip_serializing_none]
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize, Builder)]
 pub struct SlackRichTextPreformattedElement {
-    pub elements: Vec<SlackRichTextElementType>,
+    pub elements: Vec<SlackRichTextBlockElementType>,
     pub border: Option<u32>,
 }
 
@@ -120,7 +120,7 @@ impl From<SlackRichTextPreformattedElement> for SlackRichTextBlockElement {
 #[skip_serializing_none]
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize, Builder)]
 pub struct SlackRichTextQuoteElement {
-    pub elements: Vec<SlackRichTextElementType>,
+    pub elements: Vec<SlackRichTextBlockElementType>,
     pub border: Option<u32>,
 }
 
@@ -135,7 +135,7 @@ impl From<SlackRichTextQuoteElement> for SlackRichTextBlockElement {
 /// https://api.slack.com/reference/block-kit/blocks#rich_text_preformatted
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
-pub enum SlackRichTextElementType {
+pub enum SlackRichTextBlockElementType {
     #[serde(rename = "broadcast")]
     SlackRichTextElementBroadcast(serde_json::Value),
     #[serde(rename = "color")]
@@ -179,7 +179,7 @@ pub enum SlackRichTextElementTextStyle {
 impl From<String> for SlackRichTextElementText {
     fn from(value: String) -> Self {
         SlackRichTextElementText {
-            text: value.into(),
+            text: value,
             style: None,
         }
     }
